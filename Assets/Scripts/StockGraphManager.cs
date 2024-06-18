@@ -22,12 +22,13 @@ public class StockGraphManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        
+        // update ovr
+        OVRInput.Update();
     }
 
     private GameObject CreateCanvas(string name, float width, float height)
     {
-        GameObject stockGraph = new GameObject(name, typeof(Canvas), typeof(CanvasScaler), typeof(GraphicRaycaster));
+        GameObject stockGraph = new GameObject(name, typeof(Canvas), typeof(CanvasScaler), typeof(OVRRaycaster));
         Canvas canvas = stockGraph.GetComponent<Canvas>();
         canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
         canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);

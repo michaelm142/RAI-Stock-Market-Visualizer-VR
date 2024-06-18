@@ -81,11 +81,14 @@ public class WatchlistTickerController : MonoBehaviour
             today = DateTime.Now.AddDays(-1);
             yesterDay = DateTime.Now.AddDays(-2);
         }
-        if (today.DayOfWeek == DayOfWeek.Sunday)
+        else if (today.DayOfWeek == DayOfWeek.Sunday)
         {
             today = DateTime.Now.AddDays(-2);
             yesterDay = DateTime.Now.AddDays(-3);
         }
+        else if (today.DayOfWeek == DayOfWeek.Monday)
+            yesterDay = today.AddDays(-4);
+
         // download stock data
         Stonk stonk = s.Value;
         stonk.HistoricalData = Stonks.Get(stonk, yesterDay, today);
