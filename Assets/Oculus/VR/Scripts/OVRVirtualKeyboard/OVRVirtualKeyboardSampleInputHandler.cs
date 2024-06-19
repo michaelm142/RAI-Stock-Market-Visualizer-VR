@@ -44,13 +44,13 @@ public class OVRVirtualKeyboardSampleInputHandler : MonoBehaviour
     public float AnalogStickY => ApplyDeadzone(OVRInput.Get(OVRInput.Axis2D.PrimaryThumbstick).y +
                                                OVRInput.Get(OVRInput.Axis2D.SecondaryThumbstick).y);
 
-    public Vector3 InputRayPosition => inputModule.rayTransform.position;
+    public Vector3 InputRayPosition => inputModule.rayTransforms[0].position;
 
     public Quaternion InputRayRotation =>
         interactionDevice_ == OVRInput.Controller.LHand
-            ? inputModule.rayTransform.rotation * Quaternion.Euler(Vector3.forward * 180)
+            ? inputModule.rayTransforms[0].rotation * Quaternion.Euler(Vector3.forward * 180)
             : // Flip input rotation if left hand input
-            inputModule.rayTransform.rotation;
+            inputModule.rayTransforms[0].rotation;
 
     public OVRVirtualKeyboard OVRVirtualKeyboard;
 
@@ -218,7 +218,7 @@ public class OVRVirtualKeyboardSampleInputHandler : MonoBehaviour
             ? OVRVirtualKeyboard.handLeft.gameObject
             : OVRVirtualKeyboard.handRight.gameObject;
         interactionDevice_ = activeController;
-        inputModule.rayTransform = activeController switch
+        inputModule.rayTransforms[0] = activeController switch
         {
             OVRInput.Controller.LHand => OVRVirtualKeyboard.handLeft.PointerPose,
             OVRInput.Controller.LTouch => OVRVirtualKeyboard.handLeft.transform,

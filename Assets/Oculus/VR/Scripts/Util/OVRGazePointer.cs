@@ -90,22 +90,6 @@ public class OVRGazePointer : OVRCursor
 
     private static OVRGazePointer _instance;
 
-    public static OVRGazePointer instance
-    {
-        // If there's no GazePointer already in the scene, instanciate one now.
-        get
-        {
-            if (_instance == null)
-            {
-                Debug.Log(string.Format("Instanciating GazePointer", 0));
-                _instance = (OVRGazePointer)GameObject.Instantiate(
-                    (OVRGazePointer)Resources.Load("Prefabs/GazePointerRing", typeof(OVRGazePointer)));
-            }
-
-            return _instance;
-        }
-    }
-
 
     /// <summary>
     /// Used to determine alpha level of gaze cursor. Could also be used to determine cursor size, for example, as the cursor fades out.
@@ -156,15 +140,6 @@ public class OVRGazePointer : OVRCursor
     public void Awake()
     {
         currentScale = 1;
-        // Only allow one instance at runtime.
-        if (_instance != null && _instance != this)
-        {
-            enabled = false;
-            DestroyImmediate(this);
-            return;
-        }
-
-        _instance = this;
 
         gazeIcon = transform.Find("GazeIcon");
         progressIndicator = transform.GetComponent<OVRProgressIndicator>();
@@ -172,9 +147,6 @@ public class OVRGazePointer : OVRCursor
 
     void Update()
     {
-        if (rayTransform == null && Camera.main != null)
-            rayTransform = Camera.main.transform;
-
         // Move the gaze cursor to keep it in the middle of the view
         transform.position = rayTransform.position + rayTransform.forward * depth;
 
@@ -231,10 +203,6 @@ public class OVRGazePointer : OVRCursor
             newRot.SetLookRotation(rayTransform.forward, rayTransform.up);
             transform.rotation = newRot;
         }
-
-        Quaternion iconRotation = gazeIcon.rotation;
-        iconRotation.SetLookRotation(transform.rotation * new Vector3(0, 0, 1));
-        gazeIcon.rotation = iconRotation;
 
         positionSetsThisFrame = 0;
     }
