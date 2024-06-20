@@ -10,6 +10,7 @@ public class StockGraphManager : MonoBehaviour
 {
     public GameObject stockGraphPrefab;
     public GameObject watchlistPrefab;
+    public GameObject canvasPrefab;
 
     // Start is called before the first frame update
     void Start()
@@ -22,13 +23,12 @@ public class StockGraphManager : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        // update ovr
-        OVRInput.Update();
     }
 
     private GameObject CreateCanvas(string name, float width, float height)
     {
-        GameObject stockGraph = new GameObject(name, typeof(Canvas), typeof(CanvasScaler), typeof(OVRRaycaster));
+        GameObject stockGraph = Instantiate(canvasPrefab);
+        stockGraph.name = name;
         Canvas canvas = stockGraph.GetComponent<Canvas>();
         canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Horizontal, width);
         canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);

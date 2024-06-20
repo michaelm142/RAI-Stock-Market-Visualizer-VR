@@ -104,7 +104,7 @@ namespace Oculus.Interaction
         {
             if (!Hand.IsTrackedDataValid)
             {
-                if (IsVisible || ForceOffVisibility)
+                if (IsVisible && ForceOffVisibility)
                 {
                     _skinnedMeshRenderer.enabled = false;
                 }
