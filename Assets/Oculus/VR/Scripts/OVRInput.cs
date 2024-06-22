@@ -1164,7 +1164,6 @@ public static class OVRInput
         for (int i = 0; i < controllers.Count; i++)
         {
             OVRControllerBase controller = controllers[i];
-            Debug.Log(string.Format("Controller | Buttons:{0}", controller.currentState.Buttons));
 
             if (ShouldResolveController(controller.controllerType, controllerMask))
             {

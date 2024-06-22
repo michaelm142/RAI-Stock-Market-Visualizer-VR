@@ -22,7 +22,6 @@ public class WatchlistTickerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        Stonks.Load();
     }
 
     // Update is called once per frame
@@ -70,9 +69,17 @@ public class WatchlistTickerController : MonoBehaviour
 
     void UpdateTicker(string symbol, GameObject ticker)
     {
+        Debug.Log("Downloading data from: " + symbol);
+       
+        // sanatize input
+        symbol = symbol.Split(new char[] { (char)0x0b, (char)0x0a }, StringSplitOptions.RemoveEmptyEntries)[0];
+        // download stock data
         Stonk? s = Stonks.Get(symbol.ToUpper());
         if (s == null)
+        {
+            Debug.LogError("Failed to get stock data for: " + symbol);
             return;
+        }
         // determine the current buisness day
         DateTime today = DateTime.Now;
         DateTime yesterDay = DateTime.Now.AddDays(-1);
@@ -100,6 +107,8 @@ public class WatchlistTickerController : MonoBehaviour
         decimal percentChange = System.Math.Round(priceChange / yesterdayStonket.AdjustedClosingPrice * 100, 2);
         closePrice = Math.Round(closePrice, 2);
         priceChange = Math.Round(priceChange, 2);
+
+        ticker.GetComponent<StockTickerDragDrop>().stockSymbol = stonk.Symbol;
 
         ticker.transform.Find("Ticker/Text").GetComponent<TextMeshProUGUI>().text =
             string.Format(tickerLayout, 

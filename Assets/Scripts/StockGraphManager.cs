@@ -16,8 +16,7 @@ public class StockGraphManager : MonoBehaviour
     void Start()
     {
         Stonks.Load();
-        //CreateStockGraph("AMC", Vector3.zero);
-        CreateStockTicker(Vector3.zero);
+        CreateStockTicker(transform.position);
     }
 
     // Update is called once per frame
@@ -44,26 +43,26 @@ public class StockGraphManager : MonoBehaviour
 
     public void CreateStockTicker(Vector3 position)
     {
-        GameObject canvas = CreateCanvas("StockTicker", 3.0f, 5.0f);
+        GameObject canvas = CreateCanvas("StockTicker", 1.5F, 3);
         canvas.transform.position = position;
 
         GameObject watchList = Instantiate(watchlistPrefab, canvas.transform);
     }
 
-    public void CreateStockGraph(string symbol, Vector3 position)
+    public GameObject CreateStockGraph(string symbol, Vector3 position)
     {
-        Stonk? s = Stonks.Get(symbol);
-        if (s == null)
+        Stonk? s = Stonks.Get(symbol.ToUpper());
+        if (!s.HasValue)
         {
             Debug.LogError("Unable to get stock from Yahoo");
-            return;
+            return null;
         }
         Stonk stonk = s.Value;
 
         Debug.Log("Downloaded data for " + stonk.CompanyName);
 
         // create canvas
-        GameObject stockGraph = CreateCanvas(string.Format("Stock Graph for {0}", symbol), 5.0f, 5.0f);
+        GameObject stockGraph = CreateCanvas(string.Format("Stock Graph for {0}", symbol), 1.0f, 1.0f);
         stockGraph.transform.position = position;
         // create graph element
         GameObject graphElement = Instantiate(stockGraphPrefab, stockGraph.transform);
@@ -94,5 +93,7 @@ public class StockGraphManager : MonoBehaviour
 
         graphElement.transform.Find("StockInfo/Graph/BoxAndWhiskerPlot").GetComponent<BoxAndWhiskerLineController>().SetData(boxAndWhiskerData);
         graphElement.transform.Find("StockInfo/Graph/Line").GetComponent<GraphLineController>().SetData(lineData);
+
+        return stockGraph.gameObject;
     }
 }

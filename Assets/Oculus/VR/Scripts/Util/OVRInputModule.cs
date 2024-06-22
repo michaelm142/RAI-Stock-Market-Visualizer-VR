@@ -18,6 +18,7 @@
  * limitations under the License.
  */
 
+using PlasticPipe.Tube;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -473,14 +474,15 @@ namespace UnityEngine.EventSystems
 
             // Process the first mouse button fully
             ProcessMousePress(leftButtonData);
-            ProcessMove(leftButtonData.buttonData);
+            //ProcessMove(leftButtonData.buttonData);
+            leftButtonData.buttonData.delta = mouseData.GetButtonState(PointerEventData.InputButton.Left).eventData.buttonData.delta;
             ProcessDrag(leftButtonData.buttonData);
 
             // Now process right / middle clicks
-            ProcessMousePress(mouseData.GetButtonState(PointerEventData.InputButton.Right).eventData);
-            ProcessDrag(mouseData.GetButtonState(PointerEventData.InputButton.Right).eventData.buttonData);
-            ProcessMousePress(mouseData.GetButtonState(PointerEventData.InputButton.Middle).eventData);
-            ProcessDrag(mouseData.GetButtonState(PointerEventData.InputButton.Middle).eventData.buttonData);
+            // ProcessMousePress(mouseData.GetButtonState(PointerEventData.InputButton.Right).eventData);
+            // ProcessDrag(mouseData.GetButtonState(PointerEventData.InputButton.Right).eventData.buttonData);
+            // ProcessMousePress(mouseData.GetButtonState(PointerEventData.InputButton.Middle).eventData);
+            // ProcessDrag(mouseData.GetButtonState(PointerEventData.InputButton.Middle).eventData.buttonData);
 
             if (!Mathf.Approximately(leftButtonData.buttonData.scrollDelta.sqrMagnitude, 0.0f))
             {
@@ -513,11 +515,11 @@ namespace UnityEngine.EventSystems
                 //m_RaycastResultCache.Clear();
             }
 #if !UNITY_ANDROID
-            foreach (var data in GetCanvasPointerData())
-            {
-                ProcessMouseEvent(data);
-                //m_RaycastResultCache.Clear();
-            }
+            //foreach (var data in GetCanvasPointerData())
+            //{
+            //    ProcessMouseEvent(data);
+            //    //m_RaycastResultCache.Clear();
+            //}
 #endif
         }
 
@@ -549,6 +551,7 @@ namespace UnityEngine.EventSystems
             @to.pointerCurrentRaycast = @from.pointerCurrentRaycast;
             @to.pointerEnter = @from.pointerEnter;
             @to.worldSpaceRay = @from.worldSpaceRay;
+            @to.pointer = @from.pointer;
         }
 
         /// <summary>
@@ -663,9 +666,8 @@ namespace UnityEngine.EventSystems
                 // Perform raycast to find intersections with world
                 eventSystem.RaycastAll(leftData, m_RaycastResultCache);
                 var raycast = FindFirstRaycast(m_RaycastResultCache);
-                if (raycast.gameObject != null)
-                    Debug.Log(raycast.gameObject.name);
                 leftData.pointerCurrentRaycast = raycast;
+                leftData.pointer = rayTransform;
                 m_RaycastResultCache.Clear();
 
                 m_Cursor.SetCursorRay(rayTransform);
@@ -677,7 +679,7 @@ namespace UnityEngine.EventSystems
                     // The Unity UI system expects event data to have a screen position
                     // so even though this raycast came from a world space ray we must get a screen
                     // space position for the camera attached to this raycaster for compatability
-                    leftData.position = ovrRaycaster.GetScreenPosition(raycast);
+                    leftData.position = ovrRaycaster.GetScreenPosition(raycast); 
 
                     // Find the world position and normal the Graphic the ray intersected
                     RectTransform graphicRect = raycast.gameObject.GetComponent<RectTransform>();
@@ -708,10 +710,14 @@ namespace UnityEngine.EventSystems
                         }
                     }
 
+                    leftData.pressPosition = leftData.position; 
                     leftData.position = physicsRaycaster.GetScreenPos(raycast.worldPosition);
 
                     m_Cursor.SetCursorStartDest(rayTransform.position, position, raycast.worldNormal);
                 }
+
+                // compute the change in the cursors position
+                leftData.delta = leftData.position - leftData.pressPosition;
 
                 // Stick default data values in right and middle slots for compatability
 

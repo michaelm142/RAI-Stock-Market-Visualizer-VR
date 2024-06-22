@@ -32,6 +32,8 @@ namespace UnityEngine.EventSystems
     [HelpURL("https://developer.oculus.com/reference/unity/latest/class_o_v_r_pointer_event_data")]
     public class OVRPointerEventData : PointerEventData
     {
+        public Transform pointer;
+
         public OVRPointerEventData(EventSystem eventSystem)
             : base(eventSystem)
         {
