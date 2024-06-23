@@ -46,7 +46,7 @@ public class WatchlistTickerController : MonoBehaviour
 
         //Addbutton.transform.localPosition = Vector3.zero;
 
-        ticker.transform.Find("Ticker/CloseButton").GetComponent<Button>().onClick.AddListener(delegate () { RemoveTicker(ticker); });
+        ticker.transform.Find("CloseButton").GetComponent<Button>().onClick.AddListener(delegate () { RemoveTicker(ticker); });
         ticker.transform.Find("StockSymbol").GetComponent<TMP_InputField>().onEndEdit.AddListener(delegate (string text) { UpdateTicker(text, ticker); });
         transform.localPosition = Vector3.zero;
     }
@@ -74,33 +74,17 @@ public class WatchlistTickerController : MonoBehaviour
         // sanatize input
         symbol = symbol.Split(new char[] { (char)0x0b, (char)0x0a }, StringSplitOptions.RemoveEmptyEntries)[0];
         // download stock data
-        Stonk? s = Stonks.Get(symbol.ToUpper());
-        if (s == null)
+        Stonk stonk = Stonks.Get(symbol.ToUpper());
+        if (stonk == null)
         {
             Debug.LogError("Failed to get stock data for: " + symbol);
             return;
         }
-        // determine the current buisness day
-        DateTime today = DateTime.Now;
-        DateTime yesterDay = DateTime.Now.AddDays(-1);
-        if (today.DayOfWeek == DayOfWeek.Saturday)
-        {
-            today = DateTime.Now.AddDays(-1);
-            yesterDay = DateTime.Now.AddDays(-2);
-        }
-        else if (today.DayOfWeek == DayOfWeek.Sunday)
-        {
-            today = DateTime.Now.AddDays(-2);
-            yesterDay = DateTime.Now.AddDays(-3);
-        }
-        else if (today.DayOfWeek == DayOfWeek.Monday)
-            yesterDay = today.AddDays(-4);
 
         // download stock data
-        Stonk stonk = s.Value;
-        stonk.HistoricalData = Stonks.Get(stonk, yesterDay, today);
-        Stonket yesterdayStonket = stonk.HistoricalData[0];
-        Stonket todayStonket = stonk.HistoricalData[1];
+        var twoDayData = Stonks.GetTwoDayStockData(stonk, DateTime.Now.AddDays(-1), DateTime.Now);
+        Stonket yesterdayStonket = twoDayData[0];
+        Stonket todayStonket = twoDayData[1];
 
         decimal closePrice = todayStonket.AdjustedClosingPrice;
         decimal priceChange = todayStonket.AdjustedClosingPrice - yesterdayStonket.AdjustedClosingPrice;

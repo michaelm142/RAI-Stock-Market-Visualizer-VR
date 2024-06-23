@@ -33,7 +33,7 @@ public class StockGraphManager : MonoBehaviour
         canvas.GetComponent<RectTransform>().SetSizeWithCurrentAnchors(RectTransform.Axis.Vertical, height);
         canvas.renderMode = RenderMode.WorldSpace;
         canvas.worldCamera = GameObject.FindGameObjectWithTag("MainCamera").GetComponent<Camera>();
-        canvas.referencePixelsPerUnit = 1;
+        canvas.referencePixelsPerUnit = 0.01f;
         canvas.sortingOrder = -100;
         CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();
         scaler.referencePixelsPerUnit = 1;
@@ -43,22 +43,21 @@ public class StockGraphManager : MonoBehaviour
 
     public void CreateStockTicker(Vector3 position)
     {
-        GameObject canvas = CreateCanvas("StockTicker", 1.5F, 3);
+        GameObject canvas = CreateCanvas("StockTicker", 2.032f, 2.794f);
         canvas.transform.position = position;
+        canvas.transform.localScale = Vector3.one * 0.1f;
 
         GameObject watchList = Instantiate(watchlistPrefab, canvas.transform);
     }
 
     public GameObject CreateStockGraph(string symbol, Vector3 position)
     {
-        Stonk? s = Stonks.Get(symbol.ToUpper());
-        if (!s.HasValue)
+        Stonk stonk = Stonks.Get(symbol.ToUpper());
+        if (stonk == null)
         {
             Debug.LogError("Unable to get stock from Yahoo");
             return null;
         }
-        Stonk stonk = s.Value;
-
         Debug.Log("Downloaded data for " + stonk.CompanyName);
 
         // create canvas
