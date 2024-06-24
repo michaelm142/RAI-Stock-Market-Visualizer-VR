@@ -1,5 +1,6 @@
 using FinanceModule;
 using Meta.WitAi.Events;
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -71,6 +72,8 @@ public class StockGraphManager : MonoBehaviour
         GameObject graphElement = Instantiate(stockGraphPrefab, stockGraph.transform);
         graphElement.transform.Find("Controls/StockSymbol").GetComponent<TMPro.TMP_InputField>().text = stonk.Symbol;
         graphElement.transform.Find("Controls/StockName").GetComponent<TextMeshProUGUI>().text = stonk.CompanyName;
+        graphElement.transform.Find("Controls/StartDate/Text").GetComponent<TextMeshProUGUI>().text = DateTime.Now.AddDays(-10).Date.ToString().Split(new char[] { ' ' })[0];
+        graphElement.transform.Find("Controls/EndDate/Text").GetComponent<TextMeshProUGUI>().text = DateTime.Now.Date.ToString().Split(new char[] { ' ' })[0];
 
         // download historical data
         GridLineController grid = graphElement.transform.Find("StockInfo/Graph/GridLines").GetComponent<GridLineController>();
@@ -83,7 +86,7 @@ public class StockGraphManager : MonoBehaviour
 
     IEnumerator DownloadDataForStockGraphCoroutine(object[] prams)
     {
-        Stonk stonk = prams[0] as Stonk; 
+        Stonk stonk = prams[0] as Stonk;
         System.DateTime start = (System.DateTime)prams[1];
         System.DateTime end = (System.DateTime)prams[2];
         GridLineController grid = prams[3] as GridLineController;
@@ -91,7 +94,7 @@ public class StockGraphManager : MonoBehaviour
         foreach (int i in stonk.DownloadStockData(start, end))
         {
             yield return new WaitForSeconds(1);
-        }    
+        }
 
         Debug.Log(string.Format("Downloading data from {0} to {1}", System.DateTime.Now.AddDays(-(grid.MaxValue.x - grid.MinValue.x)), System.DateTime.Now));
         List<float>[] boxAndWhiskerData = new List<float>[4]
@@ -112,8 +115,32 @@ public class StockGraphManager : MonoBehaviour
             lineData.Add((float)stonket.ClosingPrice);
         }
 
+        // compute data range
+        decimal maxValue = 0, minValue = 0;
+        decimal range = ComputeMinMax(stonk.HistoricalData, out maxValue, out minValue);
+
         graphElement.transform.Find("StockInfo/Graph/BoxAndWhiskerPlot").GetComponent<BoxAndWhiskerLineController>().SetData(boxAndWhiskerData);
         graphElement.transform.Find("StockInfo/Graph/Line").GetComponent<GraphLineController>().SetData(lineData);
+        graphElement.transform.Find("StockInfo/Graph/GridLines").GetComponent<GridLineController>().MinValue.y = (float)(minValue - range * 0.1M);
+        graphElement.transform.Find("StockInfo/Graph/GridLines").GetComponent<GridLineController>().MaxValue.y = (float)(maxValue + range * 0.1M);
         yield return null;
+    }
+
+    private decimal ComputeMinMax(List<Stonket> stonkets, out decimal highValue, out decimal lowValue)
+    {
+        highValue = lowValue = 0.0M;
+        foreach (Stonket stonket in stonkets)
+        {
+            highValue = Math.Max(stonket.OpeningPrice, stonket.LowPrice);
+            highValue = Math.Max(highValue, stonket.HighPrice);
+            highValue = Math.Max(highValue, stonket.ClosingPrice);
+
+
+            lowValue = Math.Min(stonket.OpeningPrice, stonket.LowPrice);
+            lowValue = Math.Min(lowValue, stonket.HighPrice);
+            lowValue = Math.Min(lowValue, stonket.ClosingPrice);
+        }
+        
+        return highValue - lowValue;
     }
 }

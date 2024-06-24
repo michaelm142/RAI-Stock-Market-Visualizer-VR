@@ -92,8 +92,8 @@ public class GridLineController : MonoBehaviour
         for (float x = -rect.width / 2.0f; x <= rect.width / 2.0f; x += widthDifference)
         {
             GameObject line = new GameObject("Horizontal Line " + index.ToString());
-            line.transform.position = transform.position + transform.right * x;
             line.transform.parent = transform;
+            line.transform.localPosition = transform.position + transform.right * x;
 
             LineRenderer lr = line.AddComponent<LineRenderer>();
             lr.SetPositions(new Vector3[] { Vector3.zero, rect.height * Vector3.up });

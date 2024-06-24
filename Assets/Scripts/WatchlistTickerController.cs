@@ -82,7 +82,7 @@ public class WatchlistTickerController : MonoBehaviour
         }
 
         // download stock data
-        var twoDayData = Stonks.GetTwoDayStockData(stonk, DateTime.Now.AddDays(-1), DateTime.Now);
+        var twoDayData = Stonks.GetTwoDayStockData(stonk, DateTime.Now, DateTime.Now.AddDays(-1));
         Stonket yesterdayStonket = twoDayData[0];
         Stonket todayStonket = twoDayData[1];
 
