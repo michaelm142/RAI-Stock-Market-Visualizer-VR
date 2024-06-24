@@ -74,7 +74,25 @@ public class StockGraphManager : MonoBehaviour
 
         // download historical data
         GridLineController grid = graphElement.transform.Find("StockInfo/Graph/GridLines").GetComponent<GridLineController>();
-        stonk.HistoricalData = Stonks.Get(stonk, System.DateTime.Now.AddDays(-(grid.MaxValue.x - grid.MinValue.x)), System.DateTime.Now);
+
+
+        StartCoroutine("DownloadDataForStockGraphCoroutine", new object[] { stonk, System.DateTime.Now.AddDays(-(grid.MaxValue.x - grid.MinValue.x)), System.DateTime.Now, grid, graphElement });
+
+        return stockGraph.gameObject;
+    }
+
+    IEnumerator DownloadDataForStockGraphCoroutine(object[] prams)
+    {
+        Stonk stonk = prams[0] as Stonk; 
+        System.DateTime start = (System.DateTime)prams[1];
+        System.DateTime end = (System.DateTime)prams[2];
+        GridLineController grid = prams[3] as GridLineController;
+        GameObject graphElement = prams[4] as GameObject;
+        foreach (int i in stonk.DownloadStockData(start, end))
+        {
+            yield return new WaitForSeconds(1);
+        }    
+
         Debug.Log(string.Format("Downloading data from {0} to {1}", System.DateTime.Now.AddDays(-(grid.MaxValue.x - grid.MinValue.x)), System.DateTime.Now));
         List<float>[] boxAndWhiskerData = new List<float>[4]
         {
@@ -96,7 +114,6 @@ public class StockGraphManager : MonoBehaviour
 
         graphElement.transform.Find("StockInfo/Graph/BoxAndWhiskerPlot").GetComponent<BoxAndWhiskerLineController>().SetData(boxAndWhiskerData);
         graphElement.transform.Find("StockInfo/Graph/Line").GetComponent<GraphLineController>().SetData(lineData);
-
-        return stockGraph.gameObject;
+        yield return null;
     }
 }
