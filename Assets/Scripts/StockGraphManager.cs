@@ -1,4 +1,5 @@
 using FinanceModule;
+using Meta.WitAi.Events;
 using System.Collections;
 using System.Collections.Generic;
 using TMPro;
@@ -37,6 +38,8 @@ public class StockGraphManager : MonoBehaviour
         canvas.sortingOrder = -100;
         CanvasScaler scaler = canvas.GetComponent<CanvasScaler>();
         scaler.referencePixelsPerUnit = 1;
+        BoxCollider box = stockGraph.GetComponentInChildren<BoxCollider>();
+        box.size = Vector3.up * height + Vector3.right * width;
 
         return stockGraph;
     }
@@ -63,10 +66,11 @@ public class StockGraphManager : MonoBehaviour
         // create canvas
         GameObject stockGraph = CreateCanvas(string.Format("Stock Graph for {0}", symbol), 1.0f, 1.0f);
         stockGraph.transform.position = position;
+
         // create graph element
         GameObject graphElement = Instantiate(stockGraphPrefab, stockGraph.transform);
         graphElement.transform.Find("Controls/StockSymbol").GetComponent<TMPro.TMP_InputField>().text = stonk.Symbol;
-        graphElement.transform.Find("StockInfo/Title/StockName").GetComponent<TextMeshProUGUI>().text = stonk.CompanyName;
+        graphElement.transform.Find("Controls/StockName").GetComponent<TextMeshProUGUI>().text = stonk.CompanyName;
 
         // download historical data
         GridLineController grid = graphElement.transform.Find("StockInfo/Graph/GridLines").GetComponent<GridLineController>();
