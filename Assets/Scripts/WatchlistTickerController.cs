@@ -1,4 +1,5 @@
 using System;
+using System.Xml;
 using FinanceModule;
 using System.Collections;
 using System.Collections.Generic;
@@ -7,6 +8,7 @@ using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
 using UnityEngine.EventSystems;
+using System.IO;
 
 public class WatchlistTickerController : MonoBehaviour
 {
@@ -26,6 +28,7 @@ public class WatchlistTickerController : MonoBehaviour
     void Start()
     {
         virtualKeyboard = FindObjectOfType<VirtualKeyboard>();
+        LoadTickers();
     }
 
     // Update is called once per frame
@@ -33,14 +36,20 @@ public class WatchlistTickerController : MonoBehaviour
     {
     }
 
+    // called from button in unity
     public void AddTicker()
+    {
+        AddTicker(null);
+    }
+
+    public GameObject AddTicker(string stockSymbol = null)
     {
         Rect rect = GetComponent<RectTransform>().rect;
         Rect prefabRect = tickerPrefab.GetComponent<RectTransform>().rect;
         GameObject ticker = Instantiate(tickerPrefab, transform);
         ticker.name = "Ticker #" + tickers.Count.ToString();
         ticker.transform.localPosition = Vector3.down * (prefabRect.height + TickerSpacing) * tickers.Count;
-
+        ticker.GetComponent<StockTickerDragDrop>().stockSymbol = stockSymbol;
         tickers.Add(ticker);
         //tickers.ForEach(t => t.transform.SetParent(null));
         //Addbutton.transform.SetParent(null);
@@ -54,7 +63,11 @@ public class WatchlistTickerController : MonoBehaviour
         TextMeshProUGUI stockSymbolInputField = ticker.transform.Find("StockSymbol/Text").GetComponent<TextMeshProUGUI>();
         stockSymbolInputField.GetComponent<EventTrigger>().triggers.Find(t => t.eventID == EventTriggerType.PointerClick).callback
             .AddListener(delegate (BaseEventData data) { OpenKeyboard(stockSymbolInputField); });
+        if (stockSymbol != null)
+            stockSymbolInputField.text = stockSymbol;
         transform.localPosition = Vector3.zero;
+
+        return ticker;
     }
 
     public void RemoveTicker(GameObject ticker)
@@ -115,7 +128,48 @@ public class WatchlistTickerController : MonoBehaviour
     {
         virtualKeyboard.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 0.127f;
         virtualKeyboard.target = target;
-        virtualKeyboard.onSubmit.AddListener(delegate () { UpdateTicker(target.text, target.transform.parent.gameObject); });
+        virtualKeyboard.onSubmit.AddListener(delegate () { UpdateTicker(target.text, target.transform.parent.parent.gameObject); });
         virtualKeyboard.GetComponent<Animator>().SetBool("Active", true);
+    }
+
+    private void OnDestroy()
+    {
+        SaveTickers();
+    }
+
+    void SaveTickers()
+    {
+        // save all tickers to a local file
+        XmlDocument doc = new XmlDocument();
+        XmlElement rootElement = doc.CreateElement("TickerRoot");
+        doc.AppendChild(rootElement);
+        foreach (var ticker in tickers)
+        {
+            XmlElement tickerElement = rootElement.AppendChild(doc.CreateElement("Ticker")) as XmlElement;
+            XmlAttribute attr = tickerElement.Attributes.Append(doc.CreateAttribute("Symbol"));
+            attr.Value = ticker.GetComponent<StockTickerDragDrop>().stockSymbol;
+        }
+
+        doc.Save("Tickers.xml");
+    }
+
+
+    void LoadTickers()
+    {
+        // ignore this function if the ticker file does not exist
+        FileInfo file = new FileInfo("Tickers.xml");
+        if (!file.Exists)
+            return;
+
+        // load in tickers from file
+        XmlDocument doc = new XmlDocument();
+        doc.Load("Tickers.xml");
+        XmlElement root = doc.SelectSingleNode("TickerRoot") as XmlElement;
+        foreach (XmlElement tickerElement in root.ChildNodes)
+        {
+            string symbol = tickerElement.Attributes["Symbol"].Value;
+            var ticker = AddTicker(symbol);
+            UpdateTicker(symbol, ticker);
+        }
     }
 }
