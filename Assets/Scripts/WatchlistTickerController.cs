@@ -6,10 +6,13 @@ using TMPro;
 using UnityEngine;
 using UnityEngine.Events;
 using UnityEngine.UI;
+using UnityEngine.EventSystems;
 
 public class WatchlistTickerController : MonoBehaviour
 {
     public List<GameObject> tickers = new List<GameObject>();
+
+    private VirtualKeyboard virtualKeyboard;
 
     public Transform Addbutton;
 
@@ -22,6 +25,7 @@ public class WatchlistTickerController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
+        virtualKeyboard = FindObjectOfType<VirtualKeyboard>();
     }
 
     // Update is called once per frame
@@ -47,7 +51,9 @@ public class WatchlistTickerController : MonoBehaviour
         //Addbutton.transform.localPosition = Vector3.zero;
 
         ticker.transform.Find("CloseButton").GetComponent<Button>().onClick.AddListener(delegate () { RemoveTicker(ticker); });
-        ticker.transform.Find("StockSymbol").GetComponent<TMP_InputField>().onEndEdit.AddListener(delegate (string text) { UpdateTicker(text, ticker); });
+        TextMeshProUGUI stockSymbolInputField = ticker.transform.Find("StockSymbol/Text").GetComponent<TextMeshProUGUI>();
+        stockSymbolInputField.GetComponent<EventTrigger>().triggers.Find(t => t.eventID == EventTriggerType.PointerClick).callback
+            .AddListener(delegate (BaseEventData data) { OpenKeyboard(stockSymbolInputField); });
         transform.localPosition = Vector3.zero;
     }
 
@@ -103,5 +109,13 @@ public class WatchlistTickerController : MonoBehaviour
             /*4*/Math.Abs(priceChange).ToString().Length < 5 ? "\t" : "",
             /*5*/percentChange > 0 ? "green" : "red", 
             /*6*/percentChange);
+    }
+
+    void OpenKeyboard(TextMeshProUGUI target)
+    {
+        virtualKeyboard.transform.position = Camera.main.transform.position + Camera.main.transform.forward * 0.127f;
+        virtualKeyboard.target = target;
+        virtualKeyboard.onSubmit.AddListener(delegate () { UpdateTicker(target.text, target.transform.parent.gameObject); });
+        virtualKeyboard.GetComponent<Animator>().SetBool("Active", true);
     }
 }
