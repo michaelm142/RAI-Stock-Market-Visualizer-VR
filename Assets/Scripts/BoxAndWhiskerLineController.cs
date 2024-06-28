@@ -64,6 +64,7 @@ public class BoxAndWhiskerLineController : MonoBehaviour
         {
             GameObject dataPointObj = new GameObject(String.Format("Data Point {0}", i), typeof(BoxAndWhiskerDataPoint));
             dataPointObj.transform.SetParent(transform);
+            dataPointObj.transform.localRotation = Quaternion.identity;
 
             // calculate data points for this point in time 0 1 2 3
             List<float> data = SampleCurveData(x);

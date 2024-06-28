@@ -83,9 +83,16 @@ public class BoxAndWhiskerDataPoint : MonoBehaviour
             Vector3.right * (Width / 2.0f) + Vector3.up * UpperQuartile,
             Vector3.left * (Width / 2.0f) + Vector3.up * UpperQuartile,
         };
+        Rect parentRect = (transform.parent as RectTransform).rect;
+        for (int i = 0; i < points.Length; i++)
+        {
+            points[i].x = Mathf.Clamp(transform.localPosition.x + points[i].x, parentRect.xMin, parentRect.xMax) - transform.localPosition.x;
+            points[i].y = Mathf.Clamp(transform.localPosition.y + points[i].y, parentRect.yMin, parentRect.yMax) - transform.localPosition.y;
+        }
 
         GameObject boxObject = new GameObject("Box");
         boxObject.transform.SetParent(transform);
+        boxObject.transform.localRotation = Quaternion.identity;
         boxObject.transform.localPosition = Vector3.zero;
         box = boxObject.AddComponent<LineRenderer>();
         box.positionCount = points.Length;
@@ -103,6 +110,7 @@ public class BoxAndWhiskerDataPoint : MonoBehaviour
 
         GameObject upperWhiskerObject = new GameObject("UpperWhisker");
         upperWhiskerObject.transform.SetParent(transform);
+        upperWhiskerObject.transform.localRotation = Quaternion.identity;
         upperWhiskerObject.transform.localPosition = Vector3.zero;
         upperWhisker = upperWhiskerObject.AddComponent<LineRenderer>();
         upperWhisker.positionCount = points.Length;
@@ -120,6 +128,7 @@ public class BoxAndWhiskerDataPoint : MonoBehaviour
 
         GameObject lowerWhiskerObject = new GameObject("LowerWhisker");
         lowerWhiskerObject.transform.SetParent(transform);
+        lowerWhiskerObject.transform.localRotation = Quaternion.identity;
         lowerWhiskerObject.transform.localPosition = Vector3.zero;
         lowerWhisker = lowerWhiskerObject.AddComponent<LineRenderer>();
         lowerWhisker.positionCount = points.Length;

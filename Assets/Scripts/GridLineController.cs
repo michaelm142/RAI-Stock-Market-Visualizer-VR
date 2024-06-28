@@ -1,4 +1,3 @@
-using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.Events;
@@ -93,7 +92,8 @@ public class GridLineController : MonoBehaviour
         {
             GameObject line = new GameObject("Horizontal Line " + index.ToString());
             line.transform.parent = transform;
-            line.transform.localPosition = transform.position + transform.right * x;
+            line.transform.localRotation = Quaternion.identity;
+            line.transform.localPosition = Vector3.right * x;
 
             LineRenderer lr = line.AddComponent<LineRenderer>();
             lr.SetPositions(new Vector3[] { Vector3.zero, rect.height * Vector3.up });
@@ -110,10 +110,11 @@ public class GridLineController : MonoBehaviour
         for (float y = 0; y <= rect.height; y += heightDifference)
         {
             GameObject line = new GameObject("Vertical Line " + index.ToString());
-            line.transform.position = transform.position +
-                transform.right * (rect.width / 2)+ 
-                transform.up * y;
             line.transform.parent = transform;
+            line.transform.localRotation = Quaternion.identity;
+            line.transform.localPosition =
+                Vector3.right * (rect.width / 2) + 
+                Vector3.up * y;
 
             LineRenderer lr = line.AddComponent<LineRenderer>();
             lr.SetPositions(new Vector3[] { Vector3.zero, -rect.width * Vector3.right });
