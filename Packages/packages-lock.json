@@ -206,6 +206,12 @@
       },
       "url": "https://packages.unity.com"
     },
+    "jillejr.newtonsoft.json-for-unity": {
+      "version": "file:D:/Visual Studio Projects/Newtonsoft.Json-for-Unity/Src/Newtonsoft.Json-for-Unity",
+      "depth": 0,
+      "source": "local",
+      "dependencies": {}
+    },
     "com.unity.modules.ai": {
       "version": "1.0.0",
       "depth": 0,

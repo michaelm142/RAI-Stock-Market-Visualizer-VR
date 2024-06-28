@@ -100,6 +100,8 @@ public class WatchlistTickerController : MonoBehaviour
             return;
         }
 
+        Debug.Log("Downloaded data for: " + stonk.ToString());
+
         // download stock data
         var twoDayData = Stonks.GetTwoDayStockData(stonk, DateTime.Now, DateTime.Now.AddDays(-1));
         Stonket yesterdayStonket = twoDayData[0];
