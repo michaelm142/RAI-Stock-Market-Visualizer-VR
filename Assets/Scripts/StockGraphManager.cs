@@ -119,6 +119,12 @@ public class StockGraphManager : MonoBehaviour
         decimal maxValue = 0, minValue = 0;
         decimal range = ComputeMinMax(stonk.HistoricalData, out maxValue, out minValue);
 
+        graphElement.transform.Find("StockInfo/Graph/BoxAndWhiskerPlot").GetComponent<BoxAndWhiskerLineController>().enabled = true;
+        graphElement.transform.Find("StockInfo/Graph/Line").GetComponent<GraphLineController>().enabled = true;
+        graphElement.transform.Find("StockInfo/Graph/Line").GetComponent<LineRenderer>().enabled = true;
+        graphElement.transform.Find("StockInfo/Graph/GridLines").GetComponent<GridLineController>().enabled = true;
+        graphElement.transform.Find("StockInfo/Pinwheel").gameObject.SetActive(false);
+
         graphElement.transform.Find("StockInfo/Graph/BoxAndWhiskerPlot").GetComponent<BoxAndWhiskerLineController>().SetData(boxAndWhiskerData);
         graphElement.transform.Find("StockInfo/Graph/Line").GetComponent<GraphLineController>().SetData(lineData);
         graphElement.transform.Find("StockInfo/Graph/GridLines").GetComponent<GridLineController>().MinValue.y = (float)(minValue - range * 0.1M);
