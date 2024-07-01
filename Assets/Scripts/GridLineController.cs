@@ -10,6 +10,8 @@ public class GridLineController : MonoBehaviour
     private Vector2 minValuePrev;
     private Vector2 maxValuePrev;
 
+    private Vector3 scalePrev;
+
     public float LineWidth;
     private float widthPrev;
     private float heightPrev;
@@ -37,6 +39,8 @@ public class GridLineController : MonoBehaviour
 
     public Material LineMaterial;
 
+    private Transform root;
+
     private bool dirty;
 
     // Start is called before the first frame update
@@ -50,12 +54,21 @@ public class GridLineController : MonoBehaviour
         minValuePrev = MinValue;
         maxValuePrev = MaxValue;
 
+        // find the object at the scene root
+        root = FindRoot(transform);
+        scalePrev = root.localScale;
     }
 
     // Update is called once per frame
     void Update()
     {
-        Rect rect = GetComponent<RectTransform>().rect;
+        float deltaScale = root.localScale.magnitude - scalePrev.magnitude;
+        MinValue.x -= deltaScale;
+        MinValue.y -= deltaScale;
+        MaxValue.x += deltaScale;
+        MaxValue.y += deltaScale;
+
+        Rect rect = root.GetComponent<RectTransform>().rect;
         if (rect.width != widthPrev)
             dirty = true;
         if (rect.height != heightPrev)
@@ -65,6 +78,8 @@ public class GridLineController : MonoBehaviour
         if (MaxValue != maxValuePrev)
             dirty = true;
 
+        if (scalePrev.x != root.localScale.x || scalePrev.y != root.localScale.y || scalePrev.z != root.localScale.z)
+            dirty = true;
 
         if (dirty)
             Validate();
@@ -73,6 +88,7 @@ public class GridLineController : MonoBehaviour
         maxValuePrev = MaxValue;
         widthPrev = rect.width;
         heightPrev = rect.height;
+        scalePrev = root.localScale;
     }
 
     private void Validate()
@@ -87,6 +103,7 @@ public class GridLineController : MonoBehaviour
         verticalLines.Clear();
         horizontalLines.Clear();
 
+        // create horizontal line
         int index = 0;
         for (float x = -rect.width / 2.0f; x <= rect.width / 2.0f; x += widthDifference)
         {
@@ -106,6 +123,7 @@ public class GridLineController : MonoBehaviour
             index++;
         }
 
+        // create vertical lines
         index = 0;
         for (float y = 0; y <= rect.height; y += heightDifference)
         {
@@ -129,5 +147,13 @@ public class GridLineController : MonoBehaviour
 
         Validating.Invoke();
         dirty = false;
+    }
+
+    private Transform FindRoot(Transform t)
+    {
+        if (t.GetComponent<Canvas>() != null)
+            return t;
+
+        return FindRoot(t.parent);
     }
 }

@@ -72,8 +72,6 @@ public class StockGraphManager : MonoBehaviour
         GameObject graphElement = Instantiate(stockGraphPrefab, stockGraph.transform);
         graphElement.transform.Find("Controls/StockSymbol").GetComponent<TMPro.TMP_InputField>().text = stonk.Symbol;
         graphElement.transform.Find("Controls/StockName").GetComponent<TextMeshProUGUI>().text = stonk.CompanyName;
-        graphElement.transform.Find("Controls/StartDate/Text").GetComponent<TextMeshProUGUI>().text = DateTime.Now.AddDays(-10).Date.ToString().Split(new char[] { ' ' })[0];
-        graphElement.transform.Find("Controls/EndDate/Text").GetComponent<TextMeshProUGUI>().text = DateTime.Now.Date.ToString().Split(new char[] { ' ' })[0];
 
         // download historical data
         GridLineController grid = graphElement.transform.Find("StockInfo/Graph/GridLines").GetComponent<GridLineController>();
