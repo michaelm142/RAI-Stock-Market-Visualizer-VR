@@ -16,6 +16,7 @@ GameObject:
   - component: {fileID: 1274551139575070910}
   - component: {fileID: 1954033289242622709}
   - component: {fileID: 8887633597609792946}
+  - component: {fileID: 5002163155949451808}
   m_Layer: 5
   m_Name: RAIVRCanvas
   m_TagString: Untagged
@@ -88,7 +89,7 @@ MonoBehaviour:
   m_FallbackScreenDPI: 96
   m_DefaultSpriteDPI: 96
   m_DynamicPixelsPerUnit: 1
-  m_PresetInfoIsWorld: 0
+  m_PresetInfoIsWorld: 1
 --- !u!114 &834869611073197415
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -186,6 +187,19 @@ MonoBehaviour:
     MaxScale:
       Constrain: 0
       Value: 0
+--- !u!114 &5002163155949451808
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 965817938348640488}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 4889d3cf28c424e44b841860fbb2a66a, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  MinimumScale: 0.1
 --- !u!1 &5319415650747941326
 GameObject:
   m_ObjectHideFlags: 0
