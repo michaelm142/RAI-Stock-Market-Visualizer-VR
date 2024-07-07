@@ -62,11 +62,11 @@ public class GridLineController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        float deltaScale = root.localScale.magnitude - scalePrev.magnitude;
-        MinValue.x -= deltaScale;
-        MinValue.y -= deltaScale;
-        MaxValue.x += deltaScale;
-        MaxValue.y += deltaScale;
+        //float deltaScale = root.localScale.magnitude - scalePrev.magnitude;
+        //MinValue.x -= deltaScale;
+        //MinValue.y -= deltaScale;
+        //MaxValue.x += deltaScale;
+        //MaxValue.y += deltaScale;
 
         Rect rect = root.GetComponent<RectTransform>().rect;
         if (rect.width != widthPrev)
@@ -78,8 +78,8 @@ public class GridLineController : MonoBehaviour
         if (MaxValue != maxValuePrev)
             dirty = true;
 
-        if (scalePrev.x != root.localScale.x || scalePrev.y != root.localScale.y || scalePrev.z != root.localScale.z)
-            dirty = true;
+        //if (scalePrev.x != root.localScale.x || scalePrev.y != root.localScale.y || scalePrev.z != root.localScale.z)
+        //    dirty = true;
 
         if (dirty)
             Validate();

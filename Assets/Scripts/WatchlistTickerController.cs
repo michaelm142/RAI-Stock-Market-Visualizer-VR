@@ -88,6 +88,8 @@ public class WatchlistTickerController : MonoBehaviour
 
     void UpdateTicker(string symbol, GameObject ticker)
     {
+        if (string.IsNullOrEmpty(symbol))
+            return;
         Debug.Log("Downloading data from: " + symbol);
        
         // sanatize input
